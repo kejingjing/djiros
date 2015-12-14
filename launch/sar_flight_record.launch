@@ -1,0 +1,52 @@
+<launch>
+    <node pkg="rosbag" name="rosbag" type="record" output="screen" args="/csi_raw /imu_3dm_gx4/imu 
+/imu_3dm_gx4/magnetic_field /imu_3dm_gx4/pressure /djiros/ctrl /djiros/gimbal /djiros/gps /djiros/imu /djiros/mag /djiros/rc /djiros/tick /djiros/velo -o $(find sar_localization)/bag/rotating_wifi"/>
+    <node pkg="sar_localization" name="log_csi_raw" type="log_csi_raw" output="screen"> </node>
+    <!-- <node pkg="sar_localization" name="music3" type="music3" output="screen"> </node> -->
+ 	<arg name="imu_node" default="imu_3dm_gx4"/>
+
+    <!-- Baudrate of serial comms (see manual for allowed values) -->
+    <arg name="baudrate" default="921600" />
+
+    <!-- Path to device in /dev -->
+    <arg name="device" default="/dev/ttyACM0" />
+
+    <!-- Frame ID for messages -->
+    <arg name="frame_id" default="imu"/>
+
+    <!-- Decimation value x, where freq = 1000 / x -->
+    <arg name="imu_decimation" default="5"/>
+    <arg name="filter_decimation" default="5"/>
+
+    <!-- Enable/Disable the filter -->
+    <arg name="enable_filter" default="false"/>
+
+    <!-- Enable/Disable filter updates -->
+    <arg name="enable_accel_update" default="false"/>
+    <arg name="enable_mag_update" default="false"/>
+
+    <node pkg="imu_3dm_gx4" name="$(arg imu_node)" type="imu_3dm_gx4" output="screen">
+        <param name="device" type="string" value="$(arg device)" />
+        <param name="baudrate" type="int" value="$(arg baudrate)" />
+        <param name="frame_id" type="string" value="$(arg frame_id)"/>
+        <param name="imu_decimation" type="int" value="$(arg imu_decimation)" />
+        <param name="filter_decimation" type="int" value="$(arg filter_decimation)"/>
+        <param name="enable_filter" type="bool" value="$(arg enable_filter)"/>
+        <param name="enable_accel_update" type="bool" value="$(arg enable_accel_update)"/>
+        <param name="enable_mag_update" type="bool" value="$(arg enable_mag_update)"/>
+    </node>
+    
+    <node pkg="djiros" type="djiros_node" name="djiros" output="screen">
+		<env name="ROSCONSOLE_FORMAT" value="[${time}] ${message}"/>
+		<!-- node parameters -->
+		<param name="serial_name" type="string" value="/dev/ttyUSB0"/>
+		<param name="baud_rate" type="int" value="230400"/>
+		<param name="app_id" type="int" value="$(env DJIROS_APPID)"/>
+		<param name="app_api_level" type="int" value="2"/>
+		<param name="app_version" type="int" value="1"/>
+		<param name="app_bundle_id" type="string" value="12345678901234567890123456789012"/>
+		<param name="enc_key" type="string" value="$(env DJIROS_ENCKEY)"/>	
+	</node>
+    
+</launch>
+
