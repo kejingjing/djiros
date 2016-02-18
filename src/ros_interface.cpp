@@ -527,9 +527,9 @@ void interface_gimbal_control_callback(const geometry_msgs::PoseStampedConstPtr&
 {
 	const double angle_unit_convert_base = 0.1 / 180.0 * M_PI; // 0.1 degrees in rads
 	gimbal_custom_control_angle_t gimbal_angle = {0};
-	gimbal_angle.yaw_angle = static_cast<signed short>(pMsg->pose.orientation.z / angle_unit_convert_base);
+	gimbal_angle.yaw_angle = static_cast<signed short>(-1 * pMsg->pose.orientation.z / angle_unit_convert_base);
     gimbal_angle.roll_angle = static_cast<signed short>(pMsg->pose.orientation.x / angle_unit_convert_base);
-    gimbal_angle.pitch_angle = static_cast<signed short>(pMsg->pose.orientation.y / angle_unit_convert_base);
+    gimbal_angle.pitch_angle = static_cast<signed short>(-1 * pMsg->pose.orientation.y / angle_unit_convert_base);
     gimbal_angle.duration = pMsg->pose.orientation.w;
     gimbal_angle.ctrl_byte.base = 1;
     gimbal_angle.ctrl_byte.yaw_cmd_ignore = pMsg->pose.position.z < 0.0;
@@ -537,4 +537,16 @@ void interface_gimbal_control_callback(const geometry_msgs::PoseStampedConstPtr&
     gimbal_angle.ctrl_byte.pitch_cmd_ignore = pMsg->pose.position.y < 0.0;
 
     DJI_Pro_Gimbal_Angle_Control(&gimbal_angle);
+}
+
+void interface_gimbal_speed_control_callback(const geometry_msgs::TwistStampedConstPtr& pMsg)
+{
+	const double angle_unit_convert_base = 0.1 / 180.0 * M_PI; // 0.1 degrees in rads
+	gimbal_custom_speed_t gimbal_speed = {0};
+	gimbal_speed.yaw_angle_rate = static_cast<signed short>(-1 * pMsg->twist.angular.z / angle_unit_convert_base);
+    gimbal_speed.roll_angle_rate = static_cast<signed short>(pMsg->twist.angular.x / angle_unit_convert_base);
+    gimbal_speed.pitch_angle_rate = static_cast<signed short>(-1 * pMsg->twist.angular.y / angle_unit_convert_base);
+    gimbal_speed.ctrl_byte.ctrl_switch = 1;
+
+    DJI_Pro_Gimbal_Speed_Control(&gimbal_speed);
 }

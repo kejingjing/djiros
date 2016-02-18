@@ -5,6 +5,7 @@
 #include "SDK.h"
 #include <sensor_msgs/Joy.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/TwistStamped.h>
 
 #define TIME_DIFF_CHECK 0.010
 #define TIME_DIFF_ALERT 0.020
@@ -26,6 +27,7 @@ void interface_flush_time();
 void ros_process_sdk_std_msg(const sdk_std_msg_t& recv_sdk_std_msgs, uint16_t msg_flags);
 void interface_control_callback(const sensor_msgs::Joy& msg);
 void interface_gimbal_control_callback(const geometry_msgs::PoseStampedConstPtr& msg);
+void interface_gimbal_speed_control_callback(const geometry_msgs::TwistStampedConstPtr& msg);
 void interface_control_timer(const ros::TimerEvent& e);
 void stop_control();
 void ctrl_acquire_ack_success();
